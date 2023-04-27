@@ -5,7 +5,7 @@ body {
 
 #outer {
     position: absolute;
-    top: 5%;
+    top: 10%;
     left: 50%;
 }
 
@@ -37,4 +37,10 @@ a:hover {
     position: absolute;
     top: 2%;
     right: 1%;
+}
+
+#canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
 }

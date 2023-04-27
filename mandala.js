@@ -1,5 +1,5 @@
 jQuery(document).ready(function ($) {
-    digitalClock();
+    // digitalClock();
     calendar();
     analogClock();
 });
@@ -43,15 +43,30 @@ function analogClock() {
         digit(i * (360 / 60), i, 350, 'sixty')
     }
 
-    // 12 hour
-    for (i = 0; i < 12; i++) {
-        digit(i * (360 / 12), i == 0 ? 12 : i, 300, 'hours')
-    }
-
     // 24 hour
     for (i = 0; i < 12; i++) {
-        digit(i * (360 / 12), i == 0 ? 24 : i + 12, 250, 'twentyfour')
+        digit(i * (360 / 12), i == 0 ? 24 : i + 12, 300, 'twentyfour')
     }
+
+    // 12 hour
+    for (i = 0; i < 12; i++) {
+        digit(i * (360 / 12), i == 0 ? 12 : i, 250, 'hours')
+    }
+
+    const canvas = document.getElementById('canvas');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    var ctrX = (canvas.width / 2 | 0) + 10;
+    var ctrY = canvas.height / 2 | 0;
+
+    const ctx = canvas.getContext('2d');
+    ctx.strokeStyle = 'red'; // Set line color to red
+    ctx.beginPath();
+    ctx.moveTo(ctrX, ctrY);
+    ctx.lineTo(ctrX+100, ctrY+100);
+    ctx.lineWidth = 5; // Set line width to 5 pixels
+    ctx.stroke();    
 }
 
 function calendar() {
