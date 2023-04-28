@@ -1,3 +1,5 @@
+<!-- mandala.html, Rob Campbell, 2023, GPL 3 --->
+
 <!DOCTYPE html>
 <html>
 
@@ -5,14 +7,11 @@
 	<meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
 	<title>Mandala Time</title>
 	<link rel="stylesheet" type="text/css" href="mandala.css">
-	<script src='https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js'></script>
 	<script src='mandala.js'></script>
 </head>
 
-<body>
-<!---
+<body onload="startUp()">
 	<span id='clock'></span>
--->
 	<canvas id="canvas"></canvas>
 	<div id='outer' style='height:800px; width:800px;'>
 		<div id='div0' class='ring' style='height:700px; width:700px;'>
@@ -25,7 +24,7 @@
 									<div id='week' class='ring' style='height:399px; width:399px;'>
 										<div id='sixty' class='ring' style='height:350px; width:350px;'>
 											<div id='twentyfour' class='ring' style='height:300px; width:300px;'>
-												<div id='hours' class='ring' style='height:250px; width:250px;'>-->
+												<div id='hours' class='ring' style='height:250px; width:250px;'>
 												</div>
 											</div>
 										</div>

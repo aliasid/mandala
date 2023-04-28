@@ -1,86 +1,132 @@
-jQuery(document).ready(function ($) {
-    // digitalClock();
-    calendar();
-    analogClock();
-});
+// mandala.js, Rob Campbell, 2023, GPL 3
 
-function digitalClock() {
-    var today = new Date();
-    var h = today.getHours();
-    var m = today.getMinutes();
-    var ampm = 'AM';
-    h <= 12 ? ampm = 'PM' : h -= 12;
-    m < 10 ? m = '0' + m : m;
-    document.getElementById('clock').innerHTML = h + ":" + m + ' ' + ampm;
-    var t = setTimeout(function () { digitalClock() }, 30000);
+// 2D graphics canvas, context, and center point - for clock's hands
+var canvas;
+var ctx;
+var ctrX;
+var ctrY;
+
+var SEC_HAND_COLOR = 'red';
+var MIN_HAND_COLOR = 'white';
+var HRS_HAND_COLOR = 'white';
+
+// Constants for calendar  
+var DAY_ABBREV = ['M', 'Tu', 'W', 'Th', 'F', 'Sa', 'Su'];
+var MONTH_COLOR = ['Teal', 'Green', 'LightGreen', 'SpringGreen', 'GreenYellow', 'Yellow', 'Orange', 'SandyBrown', 'Brown', 'SaddleBrown', 'Purple', 'Navy'];
+var DAY_COLOR = ['LightGray', 'DarkGray', 'Gray', 'DarkGray', 'LightGray', 'DarkGray', 'Gray'];
+var MONTH_01_06 = '   January    February     March        April         May          June    ';  // NOTE spacing
+var MONTH_07_12 = '    July       August      September     October     November   December   ';  // NOTE spacing
+
+function startUp() {
+    // Function to be called on page load
+    drawCalendar();
+    drawClock();
+    canvas = document.getElementById('canvas');
+    ctx = canvas.getContext('2d');
+    tick();  // Start clock running
 }
 
-function digit(degrees, value, height, id) {
-    // Container
-    var sector = document.createElement('span');
-    sector.className = 'cal';
-    sector.style.transform = 'rotate(' + degrees + 'deg)';
-    sector.style.height = height.toString() + 'px';
-
-    // Text
-    var digit = document.createElement('strong');
-    digit.textContent = value.toString();
-    sector.appendChild(digit);
-
-    document.getElementById(id).appendChild(sector);
+function tick() {
+    now = new Date();  // Get current date & time for clock
+    document.getElementById('clock').innerHTML = now.toISOString();  // Show Zulu time for debugging
+    advanceClock(now);
+    setTimeout(tick, 1000);  // Call back in 1000ms
 }
 
-function analogClock() {
-    // Display clock in inner ring
+function advanceClock(now) {
+
+    function drawHand(color, width, radius, angle) {
+        ctx.strokeStyle = color;
+        ctx.beginPath();
+        ctx.moveTo(0 + ctrX, 0 + ctrY);
+        ctx.lineTo((radius * Math.sin(angle)) + ctrX, (radius * Math.cos(angle)) + ctrY);
+        ctx.lineWidth = width;
+        ctx.stroke();
+    }
+
+    // Adjust canvas as needed
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    ctrX = (canvas.width / 2 | 0) + 10;  // TODO Add 10 due to character width? 
+    ctrY = canvas.height / 2 | 0;
+
+    // Clear existing hands
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Minute hand
+    var mins = now.getMinutes();
+    mins = mins > 30 ? mins - 30 : mins + 30;  // TODO Why? 
+    drawHand(MIN_HAND_COLOR, 4, 158, (mins / 60) * -2 * Math.PI);
+
+    // Hours hand  TODO Advance slightly based on minute
+    var hrs = now.getHours();
+    hrs = hrs > 12 ? hrs - 12 : hrs;
+    hrs = hrs > 6 ? hrs - 6 : hrs + 6;  // TODO Why? 
+    drawHand(HRS_HAND_COLOR, 10, 110, (hrs / 12) * -2 * Math.PI);
+
+    // Second hand
+    var secs = now.getSeconds();
+    secs = secs > 30 ? secs - 30 : secs + 30;  // TODO Why? 
+    drawHand(SEC_HAND_COLOR, 2, 170, (secs / 60) * -2 * Math.PI);
+
+    // TODO Indicate current week number
+
+    // TODO Advance calendar at midnight
+
+    // TODO Show phase of moon?
+}
+
+function drawClock() {
+
+    function drawNumeral(degrees, value, height, id) {
+        // Local function to draw numbers on clock face
+
+        // Container
+        var sector = document.createElement('span');
+        sector.className = 'cal';
+        sector.style.transform = 'rotate(' + degrees + 'deg)';
+        sector.style.height = height.toString() + 'px';
+
+        // Text
+        var digit = document.createElement('strong');
+        digit.textContent = value.toString();
+        sector.appendChild(digit);
+
+        document.getElementById(id).appendChild(sector);
+    }
 
     // Week number
     for (i = 0; i < 52; i++) {
-        digit(i * (360 / 52), i == 0 ? 1 : i + 1, 399, 'week')
+        drawNumeral(i * (360 / 52), i == 0 ? 1 : i + 1, 399, 'week')
     }
 
     // Seconds
     for (i = 0; i < 60; i++) {
-        digit(i * (360 / 60), i, 350, 'sixty')
+        drawNumeral(i * (360 / 60), i, 350, 'sixty')
     }
 
     // 24 hour
     for (i = 0; i < 12; i++) {
-        digit(i * (360 / 12), i == 0 ? 24 : i + 12, 300, 'twentyfour')
+        drawNumeral(i * (360 / 12), i == 0 ? 24 : i + 12, 300, 'twentyfour')
     }
 
     // 12 hour
     for (i = 0; i < 12; i++) {
-        digit(i * (360 / 12), i == 0 ? 12 : i, 250, 'hours')
+        drawNumeral(i * (360 / 12), i == 0 ? 12 : i, 250, 'hours')
     }
-
-    const canvas = document.getElementById('canvas');
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-
-    var ctrX = (canvas.width / 2 | 0) + 10;
-    var ctrY = canvas.height / 2 | 0;
-
-    const ctx = canvas.getContext('2d');
-    ctx.strokeStyle = 'red'; // Set line color to red
-    ctx.beginPath();
-    ctx.moveTo(ctrX, ctrY);
-    ctx.lineTo(ctrX+100, ctrY+100);
-    ctx.lineWidth = 5; // Set line width to 5 pixels
-    ctx.stroke();    
 }
 
-function calendar() {
+function drawCalendar() {
+    // TODO Indicate seasons? Via monteh text colors?
 
     // Display year and month names in outside ring
     var yearText = '' + (new Date()).getFullYear();
-    var outerText = yearText[2] + yearText[3];
-    outerText += '   January    February     March        April         May          June    ';
-    outerText += '    July       August      September     October     November   December   ';
-    outerText += yearText[0] + yearText[1]
-    for (i = 0; i < outerText.length; i++) {
-        var degrees = i * (360 / outerText.length);
+    var outerText = yearText[2] + yearText[3] + MONTH_01_06 + MONTH_07_12 + yearText[0] + yearText[1];
 
-        var sector = document.createElement('span');
+    for (i = 0; i < outerText.length; i++) {
+        let degrees = i * (360 / outerText.length);
+
+        let sector = document.createElement('span');
         sector.className = 'cal';
         sector.style.transform = 'rotate(' + degrees + 'deg)';
         sector.style.height = '800px';
@@ -96,24 +142,21 @@ function calendar() {
         document.getElementById('outer').appendChild(sector);
     }
 
-    analogClock();
-
     // Between innner and outer rings: Start on Jan 1 of current year
     var date = new Date((new Date()).getFullYear(), 0, 1, 23, 59, 59, 000); // Use 11pm to absorb local timezone adjustment
     var start = date.getDay() - 1; // Numeric day of week (starting at zero)
 
     // Fill 7*(52+1) positions (7 days/week, 52 wks/yr, 1 additional "week" for labels and overlap)
-    for (var week = 0; week < 53; week++) {
-        for (var ring = 0; ring < 7; ring++) {
+    for (let week = 0; week < 53; week++) {
 
-            var borderColor;
-            var backColor;
-            var text = '';
-            var bold = false;
+        for (var ring = 0; ring < 7; ring++) {
+            let borderColor;
+            let backColor;
+            let text = '';
+            let bold = false;
 
             // Prior to Jan 1 or after end-of-year? Fill text with day-of-the-week (name)
             if ((week == 0 && ring < start) || (date.getFullYear() > (new Date()).getFullYear())) {
-                var DAY_ABBREV = ['M', 'Tu', 'W', 'Th', 'F', 'Sa', 'Su'];
                 text = DAY_ABBREV[ring];
                 bold = true;
                 borderColor = 'White';
@@ -122,8 +165,6 @@ function calendar() {
 
             // Within current year? Fill text with day-of-the-month (number)
             else {
-                var MONTH_COLOR = ['Teal', 'Green', 'LightGreen', 'SpringGreen', 'GreenYellow', 'Yellow', 'Orange', 'SandyBrown', 'Brown', 'SaddleBrown', 'Purple', 'Navy'];
-                var DAY_COLOR = ['LightGray', 'DarkGray', 'Gray', 'DarkGray', 'LightGray', 'DarkGray', 'Gray'];
                 text = date.getDate();
                 borderColor = MONTH_COLOR[date.getMonth()];
                 backColor = DAY_COLOR[ring];
@@ -148,19 +189,22 @@ function calendar() {
             sector.style.height = radius + 'px';
 
             // Fill container with a square holding the day number
+
             var day = document.createElement('span');
             day.className = 'cal';
             day.style.color = 'black';
             day.style.backgroundColor = backColor;
             day.style.border = '2px solid ' + borderColor;
+
             if (bold) {
-                var boldText = document.createElement('strong');
+                let boldText = document.createElement('strong');
                 boldText.textContent = text;
                 day.appendChild(boldText);
             }
             else {
                 day.textContent = text;
             }
+
             sector.appendChild(day);
 
             // Insert new element(s) into correct div
@@ -168,4 +212,3 @@ function calendar() {
         }
     }
 }
-
