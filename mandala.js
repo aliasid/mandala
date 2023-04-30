@@ -7,7 +7,7 @@ var ctrX;
 var ctrY;
 
 var SEC_HAND_COLOR = 'red';
-var MIN_HAND_COLOR = 'white';
+var MIN_HAND_COLOR = 'pink';
 var HRS_HAND_COLOR = 'white';
 
 // Constants for calendar  
@@ -36,10 +36,20 @@ function tick() {
 function advanceClock(now) {
 
     function drawHand(color, width, radius, angle) {
+        let outX = (radius * Math.sin(angle)); 
+        let outY = (radius * Math.cos(angle)); 
+
+        // Circle and end of hand
+        ctx.beginPath();    
+        ctx.arc(ctrX + outX, ctrY + outY, width / 2.3, 0, 2 * Math.PI);
+        ctx.fillStyle = color;
+        ctx.fill();    
+
+        // Hand itself
         ctx.strokeStyle = color;
         ctx.beginPath();
-        ctx.moveTo(0 + ctrX, 0 + ctrY);
-        ctx.lineTo((radius * Math.sin(angle)) + ctrX, (radius * Math.cos(angle)) + ctrY);
+        ctx.moveTo(ctrX, ctrY);
+        ctx.lineTo(ctrX + outX, ctrY + outY);
         ctx.lineWidth = width;
         ctx.stroke();
     }
@@ -58,16 +68,23 @@ function advanceClock(now) {
     mins = mins > 30 ? mins - 30 : mins + 30;  // TODO Why? 
     drawHand(MIN_HAND_COLOR, 4, 158, (mins / 60) * -2 * Math.PI);
 
-    // Hours hand  TODO Advance slightly based on minute
+    // Hours hand   
     var hrs = now.getHours();
     hrs = hrs > 12 ? hrs - 12 : hrs;
     hrs = hrs > 6 ? hrs - 6 : hrs + 6;  // TODO Why? 
-    drawHand(HRS_HAND_COLOR, 10, 110, (hrs / 12) * -2 * Math.PI);
+    hrs += now.getMinutes() / 60.0;  // Advance slightly based on minute 
+    drawHand(HRS_HAND_COLOR, 10, 103, (hrs / 12) * -2 * Math.PI);
 
     // Second hand
     var secs = now.getSeconds();
     secs = secs > 30 ? secs - 30 : secs + 30;  // TODO Why? 
     drawHand(SEC_HAND_COLOR, 2, 170, (secs / 60) * -2 * Math.PI);
+
+    // Center circle
+    ctx.beginPath();    
+    ctx.arc(ctrX, ctrY, 5, 0, 2 * Math.PI);
+    ctx.fillStyle = "lightgray";
+    ctx.fill();    
 
     // TODO Indicate current week number
 
@@ -78,7 +95,7 @@ function advanceClock(now) {
 
 function drawClock() {
 
-    function drawNumeral(degrees, value, height, id) {
+    function drawNumeral(degrees, value, height, id, color='white') {
         // Local function to draw numbers on clock face
 
         // Container
@@ -86,6 +103,7 @@ function drawClock() {
         sector.className = 'cal';
         sector.style.transform = 'rotate(' + degrees + 'deg)';
         sector.style.height = height.toString() + 'px';
+        sector.style.color = color;
 
         // Text
         var digit = document.createElement('strong');
@@ -95,19 +113,26 @@ function drawClock() {
         document.getElementById(id).appendChild(sector);
     }
 
+    now = new Date();  // Get current date & time
+
     // Week number
     for (i = 0; i < 52; i++) {
-        drawNumeral(i * (360 / 52), i == 0 ? 1 : i + 1, 399, 'week')
+        sector = drawNumeral(i * (360 / 52), i == 0 ? 1 : i + 1, 399, 'week');
     }
 
     // Seconds
     for (i = 0; i < 60; i++) {
-        drawNumeral(i * (360 / 60), i, 350, 'sixty')
+        if (i % 5 === 0) {
+            drawNumeral(i * (360 / 60), i, 350, 'sixty', MIN_HAND_COLOR);
+        }
+        else {
+            drawNumeral(i * (360 / 60), "'", 350, 'sixty', SEC_HAND_COLOR);
+        }
     }
 
     // 24 hour
     for (i = 0; i < 12; i++) {
-        drawNumeral(i * (360 / 12), i == 0 ? 24 : i + 12, 300, 'twentyfour')
+        drawNumeral(i * (360 / 12), i == 0 ? 24 : i + 12, 300, 'twentyfour');
     }
 
     // 12 hour
@@ -119,28 +144,7 @@ function drawClock() {
 function drawCalendar() {
     // TODO Indicate seasons? Via monteh text colors?
 
-    // Display year and month names in outside ring
-    var yearText = '' + (new Date()).getFullYear();
-    var outerText = yearText[2] + yearText[3] + MONTH_01_06 + MONTH_07_12 + yearText[0] + yearText[1];
-
-    for (i = 0; i < outerText.length; i++) {
-        let degrees = i * (360 / outerText.length);
-
-        let sector = document.createElement('span');
-        sector.className = 'cal';
-        sector.style.transform = 'rotate(' + degrees + 'deg)';
-        sector.style.height = '800px';
-
-        if (i < 2 || i > outerText.length - 3) {
-            var yearDigit = document.createElement('strong');
-            yearDigit.textContent = outerText[i];
-            sector.appendChild(yearDigit);
-        }
-        else {
-            sector.textContent = outerText[i];
-        }
-        document.getElementById('outer').appendChild(sector);
-    }
+    drawYearAndMonthNames();
 
     // Between innner and outer rings: Start on Jan 1 of current year
     var date = new Date((new Date()).getFullYear(), 0, 1, 23, 59, 59, 000); // Use 11pm to absorb local timezone adjustment
@@ -151,15 +155,23 @@ function drawCalendar() {
 
         for (var ring = 0; ring < 7; ring++) {
             let borderColor;
+            let foreColor = 'white';
             let backColor;
             let text = '';
             let bold = false;
 
             // Prior to Jan 1 or after end-of-year? Fill text with day-of-the-week (name)
             if ((week == 0 && ring < start) || (date.getFullYear() > (new Date()).getFullYear())) {
-                text = DAY_ABBREV[ring];
-                bold = true;
-                borderColor = 'White';
+                text = DAY_ABBREV[ring-1];
+
+                if (ring === new Date().getDay()) {
+                    borderColor = 'red';
+                    bold = true;
+                }
+                else {
+                    borderColor = 'White';
+                }
+                
                 backColor = 'White';
             }
 
@@ -171,7 +183,9 @@ function drawCalendar() {
 
                 // Highlight today
                 if (date.setHours(0, 0, 0, 0) == (new Date()).setHours(0, 0, 0, 0)) {
-                    backColor = borderColor;
+                    bold = true;
+                    backColor = 'black';
+                    foreColor = 'red';
                 }
 
                 // Advance date
@@ -199,6 +213,8 @@ function drawCalendar() {
             if (bold) {
                 let boldText = document.createElement('strong');
                 boldText.textContent = text;
+                boldText.style.backgroundColor = backColor;
+                boldText.style.color = foreColor;
                 day.appendChild(boldText);
             }
             else {
@@ -210,5 +226,30 @@ function drawCalendar() {
             // Insert new element(s) into correct div
             document.getElementById('div' + ring).appendChild(sector);
         }
+    }
+}
+
+function drawYearAndMonthNames() {
+    // Display year and month names in outside ring
+    var yearText = '' + (new Date()).getFullYear();
+    var outerText = yearText[2] + yearText[3] + MONTH_01_06 + MONTH_07_12 + yearText[0] + yearText[1];
+
+    for (i = 0; i < outerText.length; i++) {
+        let degrees = i * (360 / outerText.length);
+
+        let sector = document.createElement('span');
+        sector.className = 'cal';
+        sector.style.transform = 'rotate(' + degrees + 'deg)';
+        sector.style.height = '800px';
+
+        if (i < 2 || i > outerText.length - 3) {
+            var yearDigit = document.createElement('strong');
+            yearDigit.textContent = outerText[i];
+            sector.appendChild(yearDigit);
+        }
+        else {
+            sector.textContent = outerText[i];
+        }
+        document.getElementById('outer').appendChild(sector);
     }
 }
