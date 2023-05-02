@@ -1,13 +1,23 @@
 /* mandala.css, Rob Campbell, 2023, GPL 3 */
 
-/* TODO Delete unused lines */
-
 body {
     background-color: black;
     color: whitesmoke;
 }
 
-#outer {
+#zulu {
+    position: absolute;
+    top: 2%;
+    right: 1%;
+}
+
+#canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+#outerRing {
     position: absolute;
     top: 10%;
     left: 50%;
@@ -18,7 +28,8 @@ body {
     top: 25px;
 }
 
-.cal {
+.txt
+{
     position: absolute;
     left: 0;
     top: 0;
@@ -27,24 +38,42 @@ body {
     font: 14px Monaco, MonoSpace;
 }
 
-a {
-    color: whitesmoke;
-    text-decoration: none;
+.txtY {
+    color: white;
 }
 
-a:hover {
-    color: #3daee9;
-    text-decoration: underline;
+.txtM {
+    color: white;
 }
 
-#clock {
-    position: absolute;
-    top: 2%;
-    right: 1%;
+.txtW {
+    color: white;
 }
 
-#canvas {
-    position: absolute;
-    top: 0;
-    left: 0;
+.txtD {
+    color: white;
+}
+
+.txtSixtyDigit {
+    color: pink;
+}
+
+.txtSixtyTick {
+    color: red;
+}
+
+.txtH {
+    color: white;
+}
+
+#secHand {
+    color: red;
+}
+
+#minHand {
+    color: pink;
+}
+
+#hourHand {
+    color: white;
 }

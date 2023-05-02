@@ -11,20 +11,20 @@
 </head>
 
 <body onload="startUp()">
-	<span id='clock'></span>
-	<canvas id="canvas"></canvas>
-	<div id='outer' style='height:800px; width:800px;'>
-		<div id='div0' class='ring' style='height:700px; width:700px;'>
-			<div id='div1' class='ring' style='height:650px; width:650px;'>
-				<div id='div2' class='ring' style='height:600px; width:600px;'>
-					<div id='div3' class='ring' style='height:550px; width:550px;'>
-						<div id='div4' class='ring' style='height:500px; width:500px;'>
-							<div id='div5' class='ring' style='height:450px; width:450px;'>
-								<div id='div6' class='ring' style='height:400px; width:400px;'>
-									<div id='week' class='ring' style='height:399px; width:399px;'>
-										<div id='sixty' class='ring' style='height:350px; width:350px;'>
-											<div id='twentyfour' class='ring' style='height:300px; width:300px;'>
-												<div id='hours' class='ring' style='height:250px; width:250px;'>
+	<canvas id="canvas"></canvas>  <!-- JS modifies to cover entire viewport -->
+	<span id='zulu'></span>        <!-- Placed by CSS -->
+	<div id='outerRing'>           <!-- CSS places absolutely-->
+		<div id='ring0' class='ring'>                                          <!-- CSS places relateive to contining ring -->  
+			<div id='ring1' class='ring'>                                      <!--               "                        -->
+				<div id='ring2' class='ring'>                                  <!--               "                        -->
+					<div id='ring3' class='ring'>                              <!--               "                        -->
+						<div id='ring4' class='ring'>                          <!--               "                        -->
+							<div id='ring5' class='ring'>                      <!--               "                        -->
+								<div id='ring6' class='ring'>                  <!--               "                        -->
+									<div id='week' class='ring'>               <!--               "                        --> 
+										<div id='sixty' class='ring'>          <!--               "                        -->
+											<div id='twentyfour' class='ring'> <!--               "                        -->
+												<div id='hours' class='ring'>  <!--               "                        -->
 												</div>
 											</div>
 										</div>
