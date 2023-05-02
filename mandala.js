@@ -5,43 +5,46 @@ var canvas;
 var ctx;
 var ctrX;
 var ctrY;
-var clockStyle = Object();
 
-// Constants for calendar  
-var DAY_ABBREV = ['M', 'Tu', 'W', 'Th', 'F', 'Sa', 'Su'];
-var MONTH_COLOR = ['Teal', 'Green', 'LightGreen', 'SpringGreen', 'GreenYellow', 'Yellow', 'Orange', 'SandyBrown', 'Brown', 'SaddleBrown', 'Purple', 'Navy'];
-var DAY_COLOR = ['LightGray', 'DarkGray', 'Gray', 'DarkGray', 'LightGray', 'DarkGray', 'Gray'];
-var MONTH_01_06 = '   January    February     March        April         May          June    ';  // NOTE spacing
-var MONTH_07_12 = '    July       August      September     October     November   December   ';  // NOTE spacing
+// Computed styles
+var clockStyle = Object();
+var month_color = Array(12);
+var day_color = Array(7);
+
+// Calendar texts  
+var day_abbrev;
+var month_01_06;
+var month_07_12;
 
 function startUp() {
-    // Function to be called on page load
+    // Function called on page load
+    getTextsForLanguage();  
+    getComputedStyles();  
     drawCalendar();
-    drawClock();
-    canvas = document.getElementById('canvas');
-    ctx = canvas.getContext('2d');
-    fillClockStyle();
+    getCanvasAndContext()
+    drawClockNumerals();
     tick();  // Start clock running
 }
 
 function tick() {
-    now = new Date();  // Get current date & time for clock
-    document.getElementById('zulu').innerHTML = now.toISOString();  // Show Zulu time for debugging
-    advanceClock(now);
-    setTimeout(tick, 1000);  // Call back in 1000ms
+    now = new Date();
+    document.getElementById('zulu').innerHTML = now.toISOString();  // Show Zulu time for debugging  
+    drawClockHands(now);  // Get updated date & time
+    // TODO Update calendar if needed
+    setTimeout(tick, 1000);  // Call this function again in 1000ms
 }
 
-function advanceClock(now) {
+function drawClockHands(now) {
 
     function drawHand(color, width, radius, angle) {
-        let outX = (radius * Math.sin(angle)); 
-        let outY = (radius * Math.cos(angle)); 
+        let outX = (radius * Math.sin(angle));
+        let outY = (radius * Math.cos(angle));
 
         // Circle and end of hand
-        ctx.beginPath();    
+        ctx.beginPath();
         ctx.arc(ctrX + outX, ctrY + outY, width / 2.3, 0, 2 * Math.PI);
         ctx.fillStyle = color;
-        ctx.fill();    
+        ctx.fill();
 
         // Hand itself
         ctx.strokeStyle = color;
@@ -79,10 +82,10 @@ function advanceClock(now) {
     drawHand(clockStyle.secHand.color, 2, 170, (secs / 60) * -2 * Math.PI);
 
     // Center circle
-    ctx.beginPath();    
+    ctx.beginPath();
     ctx.arc(ctrX, ctrY, 5, 0, 2 * Math.PI);
     ctx.fillStyle = "lightgray";
-    ctx.fill();    
+    ctx.fill();
 
     // TODO Indicate current week number
 
@@ -91,7 +94,7 @@ function advanceClock(now) {
     // TODO Show phase of moon?
 }
 
-function drawClock() {
+function drawClockNumerals() {
 
     function drawNumeral(ringId, className, degrees, value, height) {
         // Local function to draw numbers on clock face
@@ -111,9 +114,7 @@ function drawClock() {
         document.getElementById(ringId).appendChild(sector);
     }
 
-    now = new Date();  // Get current date & time
-
-    // Week number
+    // Week number  TODO Move weeknumber code to calender drawing
     for (i = 0; i < 52; i++) {
         sector = drawNumeral('week', 'txtW', i * (360 / 52), i == 0 ? 1 : i + 1, 399);
     }
@@ -160,7 +161,7 @@ function drawCalendar() {
 
             // Prior to Jan 1 or after end-of-year? Fill text with day-of-the-week (name)
             if ((week == 0 && ring < start) || (date.getFullYear() > (new Date()).getFullYear())) {
-                text = DAY_ABBREV[ring-1];
+                text = day_abbrev[ring - 1];
 
                 if (ring === new Date().getDay()) {
                     borderColor = 'red';
@@ -169,15 +170,15 @@ function drawCalendar() {
                 else {
                     borderColor = 'White';
                 }
-                
+
                 backColor = 'White';
             }
 
             // Within current year? Fill text with day-of-the-month (number)
             else {
                 text = date.getDate();
-                borderColor = MONTH_COLOR[date.getMonth()];
-                backColor = DAY_COLOR[ring];
+                borderColor = month_color[date.getMonth()];
+                backColor = day_color[ring];
 
                 // Highlight today
                 if (date.setHours(0, 0, 0, 0) == (new Date()).setHours(0, 0, 0, 0)) {
@@ -230,13 +231,14 @@ function drawCalendar() {
 function drawYearAndMonthNames() {
     // Display year and month names in outside ring
     var yearText = '' + (new Date()).getFullYear();
-    var outerText = yearText[2] + yearText[3] + MONTH_01_06 + MONTH_07_12 + yearText[0] + yearText[1];
-
+    var outerText = yearText[2] + yearText[3] + month_01_06 + month_07_12 + yearText[0] + yearText[1];
+    var outerRing = document.getElementById('outerRing');
+    
     for (i = 0; i < outerText.length; i++) {
         let sector = document.createElement('span');
         sector.classList.add('txt', 'txtY');
         sector.style.transform = 'rotate(' + i * (360 / outerText.length) + 'deg)';
-        sector.style.height = '800px';
+        sector.style.height = outerRing.offsetHeight + 'px';
 
         if (i < 2 || i > outerText.length - 3) {
             // Bold year digits
@@ -249,14 +251,25 @@ function drawYearAndMonthNames() {
             sector.textContent = outerText[i];
         }
 
-        document.getElementById('outerRing').appendChild(sector);
+        outerRing.appendChild(sector);
     }
 }
 
-function fillClockStyle() {
-    
-    function computeStyle(id)
-    {
+function getTextsForLanguage() {
+    if (navigator.language.startsWith("en")) {
+        day_abbrev = ['M', 'Tu', 'W', 'Th', 'F', 'Sa', 'Su'];
+        month_01_06 = '   January    February     March        April         May          June    ';  // NOTE spacing
+        month_07_12 = '    July       August      September     October     November   December   ';  // NOTE spacing
+    }
+    else {
+        // TODO String values for other languages
+    }
+}
+
+function getComputedStyles() {
+    // Set style values (globals)
+
+    function computeStyle(id) {
         var dummy = document.createElement('div');
         dummy.id = id;
         dummy.style.display = 'none';
@@ -264,9 +277,22 @@ function fillClockStyle() {
         var style = getComputedStyle(dummy);
         return style;
     }
-    
+
+    for (i = 0; i < 12; i++) {
+        month_color[i] = computeStyle('mo' + i + 'border').color;
+    }
+
+    for (i = 0; i < 7; i++) {
+        day_color[i] = computeStyle('day' + i + 'background').color;
+    }
+
     clockStyle.secHand = computeStyle('secHand');
     clockStyle.minHand = computeStyle('minHand');
     clockStyle.hrsHand = computeStyle('hrsHand');
 }
 
+function getCanvasAndContext() {
+    // Set canvas and context (globals)
+    canvas = document.getElementById('canvas');
+    ctx = canvas.getContext('2d');    
+}

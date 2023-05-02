@@ -11,25 +11,33 @@ body {
     right: 1%;
 }
 
+/* For 2D graphics (clock)...
+*/
 #canvas {
     position: absolute;
     top: 0;
     left: 0;
 }
 
+/* Year and Month names...
+*/
 #outerRing {
     position: absolute;
     top: 10%;
     left: 50%;
+    height: 800px;
 }
 
+/* Day numbers...
+*/
 .ring {
     position: relative;
     top: 25px;
 }
 
-.txt
-{
+/* Rotated text...
+*/
+.txt {
     position: absolute;
     left: 0;
     top: 0;
@@ -37,6 +45,91 @@ body {
     text-align: center;
     font: 14px Monaco, MonoSpace;
 }
+
+/* Day borders (by month)...
+*/
+
+#mo0border {
+    color: Teal;
+}
+
+#mo1border {
+    color: Green;
+}
+
+#mo2border {
+    color: LightGreen;
+}
+
+#mo3border {
+    color: SpringGreen;
+}
+
+#mo4border {
+    color: GreenYellow;
+}
+
+#mo5border {
+    color: Yellow;
+}
+
+#mo6border {
+    color: Orange;
+}
+
+#mo7border {
+    color: SandyBrown;
+}
+
+#mo8border {
+    color: Brown;
+}
+
+#mo9border {
+    color: SaddleBrown;
+}
+
+#mo10border {
+    color: Purple
+}
+
+#mo11border {
+    color: Navy;
+}
+
+/* Day-of-the-week background colors...
+*/
+
+#day0background {
+    color: LightGray;
+}
+
+#day1background {
+    color: DarkGray;
+}
+
+#day2background {
+    color: Gray;
+}
+
+#day3background {
+    color: DarkGray;
+}
+
+#day4background {
+    color: LightGray;
+}
+
+#day5background {
+    color: DarkGray;
+}
+
+#day6background {
+    color: Gray;
+}
+
+/* Calendar texts...
+*/
 
 .txtY {
     color: white;
@@ -47,12 +140,15 @@ body {
 }
 
 .txtW {
-    color: white;
+    color: gray;
 }
 
 .txtD {
     color: white;
 }
+
+/* Clock texts...
+*/
 
 .txtSixtyDigit {
     color: pink;
@@ -65,6 +161,9 @@ body {
 .txtH {
     color: white;
 }
+
+/* Clock hands...
+*/
 
 #secHand {
     color: red;
