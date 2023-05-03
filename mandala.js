@@ -36,22 +36,24 @@ function tick() {
 
 function drawClockHands(now) {
 
-    function drawHand(color, width, radius, angle) {
-        let outX = (radius * Math.sin(angle));
-        let outY = (radius * Math.cos(angle));
+    function drawHand(style, angle) {
+        
+        // NOTE "height" is actuall radius
+        let outX = (parseInt(style.height) * Math.sin(angle));
+        let outY = (parseInt(style.height) * Math.cos(angle));
 
         // Circle and end of hand
         ctx.beginPath();
-        ctx.arc(ctrX + outX, ctrY + outY, width / 2.3, 0, 2 * Math.PI);
-        ctx.fillStyle = color;
+        ctx.arc(ctrX + outX, ctrY + outY, parseInt(style.width) / 2.3, 0, 2 * Math.PI);
+        ctx.fillStyle = style.color;
         ctx.fill();
 
         // Hand itself
-        ctx.strokeStyle = color;
+        ctx.strokeStyle = style.color;
         ctx.beginPath();
         ctx.moveTo(ctrX, ctrY);
         ctx.lineTo(ctrX + outX, ctrY + outY);
-        ctx.lineWidth = width;
+        ctx.lineWidth = parseInt(style.width);
         ctx.stroke();
     }
 
@@ -67,19 +69,19 @@ function drawClockHands(now) {
     // Minute hand
     var mins = now.getMinutes();
     mins = mins > 30 ? mins - 30 : mins + 30;  // TODO Why? 
-    drawHand(clockStyle.minHand.color, 4, 158, (mins / 60) * -2 * Math.PI);
+    drawHand(clockStyle.minHand, (mins / 60) * -2 * Math.PI);
 
     // Hours hand   
     var hrs = now.getHours();
     hrs = hrs > 12 ? hrs - 12 : hrs;
     hrs = hrs > 6 ? hrs - 6 : hrs + 6;  // TODO Why? 
     hrs += now.getMinutes() / 60.0;  // Advance slightly based on minute 
-    drawHand(clockStyle.hrsHand.color, 10, 103, (hrs / 12) * -2 * Math.PI);
+    drawHand(clockStyle.hrsHand, (hrs / 12) * -2 * Math.PI);
 
     // Second hand
     var secs = now.getSeconds();
     secs = secs > 30 ? secs - 30 : secs + 30;  // TODO Why? 
-    drawHand(clockStyle.secHand.color, 2, 170, (secs / 60) * -2 * Math.PI);
+    drawHand(clockStyle.secHand, (secs / 60) * -2 * Math.PI);
 
     // Center circle
     ctx.beginPath();
@@ -87,11 +89,9 @@ function drawClockHands(now) {
     ctx.fillStyle = "lightgray";
     ctx.fill();
 
-    // TODO Indicate current week number
-
     // TODO Advance calendar at midnight
 
-    // TODO Show phase of moon?
+    // TODO Show phase of moon? Dawn? Dusk? - based on loc?
 }
 
 function drawClockNumerals() {
@@ -116,33 +116,33 @@ function drawClockNumerals() {
 
     // Week number  TODO Move weeknumber code to calender drawing
     for (i = 0; i < 52; i++) {
-        sector = drawNumeral('week', 'txtW', i * (360 / 52), i == 0 ? 1 : i + 1, 399);
+        sector = drawNumeral('week', 'txtW', i * (360 / 52), i == 0 ? 1 : i + 1, 400);
     }
+
+    // TODO Get inner ring heights from css
 
     // Seconds
     for (i = 0; i < 60; i++) {
         if (i % 5 === 0) {
-            drawNumeral('sixty', 'txtSixtyDigit', i * (360 / 60), i, 350);
+            drawNumeral('sixty', 'txtSixtyDigit', i * (360 / 60), i, 350);  
         }
         else {
-            drawNumeral('sixty', 'txtSixtyTick', i * (360 / 60), "'", 350);
+            drawNumeral('sixty', 'txtSixtyTick', i * (360 / 60), "'", 350); 
         }
     }
 
     // 24 hour
     for (i = 0; i < 12; i++) {
-        drawNumeral('twentyfour', 'txtH', i * (360 / 12), i == 0 ? 24 : i + 12, 300);
+        drawNumeral('twentyfour', 'txtH', i * (360 / 12), i == 0 ? 24 : i + 12, 300);   
     }
 
     // 12 hour
     for (i = 0; i < 12; i++) {
-        drawNumeral('hours', 'txtH', i * (360 / 12), i == 0 ? 12 : i, 250)
+        drawNumeral('hours', 'txtH', i * (360 / 12), i == 0 ? 12 : i, 250); 
     }
 }
 
 function drawCalendar() {
-    // TODO Indicate seasons? Via monteh text colors?
-
     drawYearAndMonthNames();
 
     // Between innner and outer rings: Start on Jan 1 of current year
@@ -154,7 +154,7 @@ function drawCalendar() {
 
         for (var ring = 0; ring < 7; ring++) {
             let borderColor;
-            let foreColor = 'white';
+            let foreColor = 'white';  // TODO css
             let backColor;
             let text = '';
             let bold = false;
@@ -164,14 +164,14 @@ function drawCalendar() {
                 text = day_abbrev[ring - 1];
 
                 if (ring === new Date().getDay()) {
-                    borderColor = 'red';
+                    borderColor = 'red';  // TODO css
                     bold = true;
                 }
                 else {
-                    borderColor = 'White';
+                    borderColor = 'White';  // TODO css
                 }
 
-                backColor = 'White';
+                backColor = 'White';  // TODO css
             }
 
             // Within current year? Fill text with day-of-the-month (number)
@@ -183,8 +183,8 @@ function drawCalendar() {
                 // Highlight today
                 if (date.setHours(0, 0, 0, 0) == (new Date()).setHours(0, 0, 0, 0)) {
                     bold = true;
-                    backColor = 'black';
-                    foreColor = 'red';
+                    backColor = 'black';  // TODO css
+                    foreColor = 'red';  // TODO css
                 }
 
                 // Advance date
@@ -207,7 +207,7 @@ function drawCalendar() {
             day.classList.add('txt', 'txtD');
             day.style.color = 'black';
             day.style.backgroundColor = backColor;
-            day.style.border = '2px solid ' + borderColor;
+            day.style.border = '2px solid ' + borderColor;  // TODO css
 
             if (bold) {
                 let boldText = document.createElement('strong');

@@ -167,12 +167,18 @@ body {
 
 #secHand {
     color: red;
+    width: 2px;
+    height: 170px;  /* radius (lenght) */
 }
 
 #minHand {
     color: pink;
+    width: 4px;
+    height: 158px;  /* radius (lenght) */
 }
 
-#hourHand {
+#hrsHand {
     color: white;
+    width: 10px;
+    height: 103px;  /* radius (lenght) */
 }
