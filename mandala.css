@@ -46,55 +46,55 @@ body {
     font: 14px Monaco, MonoSpace;
 }
 
-/* Day borders (by month)...
+/* Month colors...
 */
 
-#mo0border {
-    color: Teal;
+#mo0 {  
+    color: DeepSkyBlue;
 }
 
-#mo1border {
-    color: Green;
+#mo1 {
+    color: CornflowerBlue;
 }
 
-#mo2border {
-    color: LightGreen;
+#mo2 {
+    color: Lime;
 }
 
-#mo3border {
-    color: SpringGreen;
+#mo3 {
+    color: YellowGreen;
 }
 
-#mo4border {
-    color: GreenYellow;
+#mo4 {
+    color: Lime;
 }
 
-#mo5border {
-    color: Yellow;
+#mo5 {
+    color: DarkRed;
 }
 
-#mo6border {
-    color: Orange;
+#mo6 {
+    color: Pink;
 }
 
-#mo7border {
-    color: SandyBrown;
+#mo7 {
+    color: Red;
 }
 
-#mo8border {
+#mo8 {
+    color: DarkGoldenrod;
+}
+
+#mo9 {
     color: Brown;
 }
 
-#mo9border {
-    color: SaddleBrown;
+#mo10 {
+    color: Sienna;
 }
 
-#mo10border {
-    color: Purple
-}
-
-#mo11border {
-    color: Navy;
+#mo11 {
+    color: DodgerBlue;
 }
 
 /* Day-of-the-week background colors...

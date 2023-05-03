@@ -234,6 +234,8 @@ function drawYearAndMonthNames() {
     var outerText = yearText[2] + yearText[3] + month_01_06 + month_07_12 + yearText[0] + yearText[1];
     var outerRing = document.getElementById('outerRing');
     
+    moNum = 0;  
+
     for (i = 0; i < outerText.length; i++) {
         let sector = document.createElement('span');
         sector.classList.add('txt', 'txtY');
@@ -241,13 +243,19 @@ function drawYearAndMonthNames() {
         sector.style.height = outerRing.offsetHeight + 'px';
 
         if (i < 2 || i > outerText.length - 3) {
-            // Bold year digits
+            // Year digit - bold
             var yearDigit = document.createElement('strong');
             yearDigit.textContent = outerText[i];
             sector.appendChild(yearDigit);
         }
+        else if (outerText[i] == '!') {   
+            // ! = advance to next month number
+            moNum += 1;
+            sector.textContent = ' ';
+        }
         else {
-            // Month name letters
+            // Space or month name letter
+            sector.style.color = month_color[moNum];
             sector.textContent = outerText[i];
         }
 
@@ -258,8 +266,8 @@ function drawYearAndMonthNames() {
 function getTextsForLanguage() {
     if (navigator.language.startsWith("en")) {
         day_abbrev = ['M', 'Tu', 'W', 'Th', 'F', 'Sa', 'Su'];
-        month_01_06 = '   January    February     March        April         May          June    ';  // NOTE spacing
-        month_07_12 = '    July       August      September     October     November   December   ';  // NOTE spacing
+        month_01_06 = '   January!    February!     March!        April!         May!          June!    ';  // NOTE spacing
+        month_07_12 = '    July!       August!      September!     October!     November!   December!   ';  // NOTE spacing
     }
     else {
         // TODO String values for other languages
@@ -279,7 +287,7 @@ function getComputedStyles() {
     }
 
     for (i = 0; i < 12; i++) {
-        month_color[i] = computeStyle('mo' + i + 'border').color;
+        month_color[i] = computeStyle('mo' + i).color;
     }
 
     for (i = 0; i < 7; i++) {
