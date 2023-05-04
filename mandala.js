@@ -9,7 +9,6 @@ var ctrY;
 // Computed styles
 var clockStyle = Object();
 var month_color = Array(12);
-var day_color = Array(7);
 
 // Calendar texts  
 var day_abbrev;
@@ -18,8 +17,8 @@ var month_07_12;
 
 function startUp() {
     // Function called on page load
-    getTextsForLanguage();  
-    getComputedStyles();  
+    getTextsForLanguage();
+    getComputedStyles();
     drawCalendar();
     getCanvasAndContext()
     drawClockNumerals();
@@ -37,7 +36,7 @@ function tick() {
 function drawClockHands(now) {
 
     function drawHand(style, angle) {
-        
+
         // NOTE "height" is actuall radius
         let outX = (parseInt(style.height) * Math.sin(angle));
         let outY = (parseInt(style.height) * Math.cos(angle));
@@ -98,48 +97,32 @@ function drawClockNumerals() {
 
     function drawNumeral(ringId, className, degrees, value, height) {
         // Local function to draw numbers on clock face
-
-        // Container
         var sector = document.createElement('span');
         sector.classList.add('txt', className);
         sector.style.transform = 'rotate(' + degrees + 'deg)';
-        sector.style.height = height.toString() + 'px';
-
-        // Text
-        var digit = document.createElement('strong');
-        digit.className = className;
-        digit.textContent = value.toString();
-        sector.appendChild(digit);
-
+        sector.style.height = height + 'px';
+        sector.textContent = value.toString();
         document.getElementById(ringId).appendChild(sector);
-    }
-
-    // Week number  TODO Move weeknumber code to calender drawing
-    for (i = 0; i < 52; i++) {
-        sector = drawNumeral('week', 'txtW', i * (360 / 52), i == 0 ? 1 : i + 1, 400);
     }
 
     // TODO Get inner ring heights from css
 
-    // Seconds
+    // Seconds and minutes
     for (i = 0; i < 60; i++) {
         if (i % 5 === 0) {
-            drawNumeral('sixty', 'txtSixtyDigit', i * (360 / 60), i, 350);  
+            drawNumeral('sixty', 'txtSixtyDigit', i * (360 / 60), i, 350);
         }
         else {
-            drawNumeral('sixty', 'txtSixtyTick', i * (360 / 60), "'", 350); 
+            drawNumeral('sixty', 'txtSixtyTick', i * (360 / 60), "'", 350);
         }
     }
 
-    // 24 hour
+    // Hours, 1-12 ring, 13-24 ring
     for (i = 0; i < 12; i++) {
-        drawNumeral('twentyfour', 'txtH', i * (360 / 12), i == 0 ? 24 : i + 12, 300);   
+        drawNumeral('twentyfour', 'txtH', i * (360 / 12), i == 0 ? 24 : i + 12, 300);
+        drawNumeral('hours', 'txtH', i * (360 / 12), i == 0 ? 12 : i, 250);
     }
 
-    // 12 hour
-    for (i = 0; i < 12; i++) {
-        drawNumeral('hours', 'txtH', i * (360 / 12), i == 0 ? 12 : i, 250); 
-    }
 }
 
 function drawCalendar() {
@@ -153,77 +136,60 @@ function drawCalendar() {
     for (let week = 0; week < 53; week++) {
 
         for (var ring = 0; ring < 7; ring++) {
-            let borderColor;
-            let foreColor = 'white';  // TODO css
-            let backColor;
-            let text = '';
-            let bold = false;
 
-            // Prior to Jan 1 or after end-of-year? Fill text with day-of-the-week (name)
+            // Creat a square to hold text, either day number or day of week)
+            var day = document.createElement('span');
+            day.classList.add('txt');
+
             if ((week == 0 && ring < start) || (date.getFullYear() > (new Date()).getFullYear())) {
-                text = day_abbrev[ring - 1];
+                // Prior to Jan 1 or after end-of-year: day-of-the-week (name)
+
+                day.textContent = day_abbrev[ring - 1];
 
                 if (ring === new Date().getDay()) {
-                    borderColor = 'red';  // TODO css
-                    bold = true;
+                    day.classList.add('currentDayOfWeek');
                 }
                 else {
-                    borderColor = 'White';  // TODO css
+                    day.classList.add('dayOfWeek');
                 }
-
-                backColor = 'White';  // TODO css
             }
-
-            // Within current year? Fill text with day-of-the-month (number)
             else {
-                text = date.getDate();
-                borderColor = month_color[date.getMonth()];
-                backColor = day_color[ring];
+                // Day-of-the-month (number)
 
-                // Highlight today
+                day.textContent = date.getDate();
+                day.style.border = '2px solid ' + month_color[date.getMonth()];  // TODO Use class or id    
+
                 if (date.setHours(0, 0, 0, 0) == (new Date()).setHours(0, 0, 0, 0)) {
-                    bold = true;
-                    backColor = 'black';  // TODO css
-                    foreColor = 'red';  // TODO css
+                    // Highlight today
+                    day.classList.add('currentDayOfMonth');
+                }
+                else {
+                    day.classList.add('dayOfMonth', 'day' + ring);
                 }
 
                 // Advance date
                 date = new Date(date.getFullYear(), date.getMonth(), date.getDate() + 1);
             }
 
-            // Calc where to place text
-            var degrees = week * (360 / 53); // degress in circle / num weeks in a year
-            var radius = (7 - ring) * 50 + 400;
-
-            // Build a container with the correct orientation and distance from center
+            // Build container w/correct orientation, dist. from center
             var sector = document.createElement('span');
-            sector.classList.add('txt', 'txtD');
-            sector.style.transform = 'rotate(' + degrees + 'deg)';
-            sector.style.height = radius + 'px';
-
-            // Fill container with a square holding the day number
-
-            var day = document.createElement('span');
-            day.classList.add('txt', 'txtD');
-            day.style.color = 'black';
-            day.style.backgroundColor = backColor;
-            day.style.border = '2px solid ' + borderColor;  // TODO css
-
-            if (bold) {
-                let boldText = document.createElement('strong');
-                boldText.textContent = text;
-                boldText.style.backgroundColor = backColor;
-                boldText.style.color = foreColor;
-                day.appendChild(boldText);
-            }
-            else {
-                day.textContent = text;
-            }
-
+            sector.classList.add('txt');
+            sector.style.transform = 'rotate(' + week * (360 / 53) + 'deg)';
+            sector.style.height = (7 - ring) * 50 + 400 + 'px';  // TODO css
             sector.appendChild(day);
 
-            // Insert new element(s) into correct div
+            // Insert container into correct ring
             document.getElementById('ring' + ring).appendChild(sector);
+        }
+
+        if (week < 52) {
+            // Week number  
+            let sec = document.createElement('span');
+            sec.classList.add('txt', 'weekNumber');
+            sec.style.transform = 'rotate(' + (week * (360 / 52)) + 'deg)';
+            sec.style.height = 400 + 'px';  // TODO css
+            sec.textContent = (week + 1).toString();
+            document.getElementById('week').appendChild(sec);
         }
     }
 }
@@ -233,30 +199,28 @@ function drawYearAndMonthNames() {
     var yearText = '' + (new Date()).getFullYear();
     var outerText = yearText[2] + yearText[3] + month_01_06 + month_07_12 + yearText[0] + yearText[1];
     var outerRing = document.getElementById('outerRing');
-    
-    moNum = 0;  
+
+    moNum = 0;
 
     for (i = 0; i < outerText.length; i++) {
         let sector = document.createElement('span');
-        sector.classList.add('txt', 'txtY');
         sector.style.transform = 'rotate(' + i * (360 / outerText.length) + 'deg)';
         sector.style.height = outerRing.offsetHeight + 'px';
+        sector.textContent = outerText[i];
 
         if (i < 2 || i > outerText.length - 3) {
-            // Year digit - bold
-            var yearDigit = document.createElement('strong');
-            yearDigit.textContent = outerText[i];
-            sector.appendChild(yearDigit);
-        }
-        else if (outerText[i] == '!') {   
-            // ! = advance to next month number
-            moNum += 1;
-            sector.textContent = ' ';
+            // Year digit
+            sector.classList.add('txt', 'txtY');
         }
         else {
-            // Space or month name letter
-            sector.style.color = month_color[moNum];
-            sector.textContent = outerText[i];
+            sector.classList.add('txt', 'mo' + moNum);
+            // TODO style current month using ".txtCurrentMonth"
+
+            if (outerText[i] == '!') {
+                // ! = advance to next month number
+                moNum += 1;
+                sector.textContent = ' ';
+            }
         }
 
         outerRing.appendChild(sector);
@@ -277,9 +241,9 @@ function getTextsForLanguage() {
 function getComputedStyles() {
     // Set style values (globals)
 
-    function computeStyle(id) {
+    function computeStyle(className) {
         var dummy = document.createElement('div');
-        dummy.id = id;
+        dummy.classList.add(className);
         dummy.style.display = 'none';
         document.body.appendChild(dummy);
         var style = getComputedStyle(dummy);
@@ -290,10 +254,6 @@ function getComputedStyles() {
         month_color[i] = computeStyle('mo' + i).color;
     }
 
-    for (i = 0; i < 7; i++) {
-        day_color[i] = computeStyle('day' + i + 'background').color;
-    }
-
     clockStyle.secHand = computeStyle('secHand');
     clockStyle.minHand = computeStyle('minHand');
     clockStyle.hrsHand = computeStyle('hrsHand');
@@ -302,5 +262,5 @@ function getComputedStyles() {
 function getCanvasAndContext() {
     // Set canvas and context (globals)
     canvas = document.getElementById('canvas');
-    ctx = canvas.getContext('2d');    
+    ctx = canvas.getContext('2d');
 }

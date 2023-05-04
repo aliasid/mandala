@@ -2,7 +2,6 @@
 
 body {
     background-color: black;
-    color: whitesmoke;
 }
 
 #zulu {
@@ -49,83 +48,83 @@ body {
 /* Month colors...
 */
 
-#mo0 {  
+.mo0 {  
     color: DeepSkyBlue;
 }
 
-#mo1 {
+.mo1 {
     color: CornflowerBlue;
 }
 
-#mo2 {
+.mo2 {
     color: Lime;
 }
 
-#mo3 {
+.mo3 {
     color: YellowGreen;
 }
 
-#mo4 {
+.mo4 {
     color: Lime;
 }
 
-#mo5 {
+.mo5 {
     color: DarkRed;
 }
 
-#mo6 {
+.mo6 {
     color: Pink;
 }
 
-#mo7 {
+.mo7 {
     color: Red;
 }
 
-#mo8 {
+.mo8 {
     color: DarkGoldenrod;
 }
 
-#mo9 {
+.mo9 {
     color: Brown;
 }
 
-#mo10 {
+.mo10 {
     color: Sienna;
 }
 
-#mo11 {
+.mo11 {
     color: DodgerBlue;
 }
 
-/* Day-of-the-week background colors...
+/* Day-of-the-week (rings)...
 */
 
-#day0background {
-    color: LightGray;
+.day0 {
+    background-color: Black;
 }
 
-#day1background {
-    color: DarkGray;
+.day1 {
+    background-color: DarkSlateGray;
 }
 
-#day2background {
-    color: Gray;
+.day2 {
+    background-color: DimGray;
 }
 
-#day3background {
-    color: DarkGray;
+.day3 {
+    background-color: Black;
 }
 
-#day4background {
-    color: LightGray;
+.day4 {
+    background-color: DarkSlateGray;
 }
 
-#day5background {
-    color: DarkGray;
+.day5 {
+    background-color: DimGray;
 }
 
-#day6background {
-    color: Gray;
+.day6 {
+    background-color: Black;
 }
 
 /* Calendar texts...
@@ -133,18 +132,35 @@ body {
 
 .txtY {
     color: white;
+    font-weight: bold;
 }
 
-.txtM {
-    color: white;
+.txtCurrentMonth {
+    font-weight: bold;
 }
 
-.txtW {
+.weekNumber {
     color: gray;
 }
 
-.txtD {
+.dayOfWeek {
     color: white;
+    font-weight: bold;
+}
+
+.currentDayOfWeek {
+    color: red;
+    font-weight: bold;
+}
+
+.dayOfMonth {
+    color: white;
+}
+
+.currentDayOfMonth {
+    color: red;
+    background-color: black;
+    font-weight: bold;
 }
 
 /* Clock texts...
@@ -152,6 +168,7 @@ body {
 
 .txtSixtyDigit {
     color: pink;
+    font-weight: bold;
 }
 
 .txtSixtyTick {
@@ -160,24 +177,25 @@ body {
 
 .txtH {
     color: white;
+    font-weight: bold;
 }
 
 /* Clock hands...
 */
 
-#secHand {
+.secHand {
     color: red;
     width: 2px;
     height: 170px;  /* radius (lenght) */
 }
 
-#minHand {
+.minHand {
     color: pink;
     width: 4px;
     height: 158px;  /* radius (lenght) */
 }
 
-#hrsHand {
+.hrsHand {
     color: white;
     width: 10px;
     height: 103px;  /* radius (lenght) */
