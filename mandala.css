@@ -1,4 +1,19 @@
 /* mandala.css, Rob Campbell, 2023, GPL 3 */
+:root {
+    --mo0color: DeepSkyBlue;
+    --mo1color: CornflowerBlue;
+    --mo2color: Lime;
+    --mo3color: YellowGreen;
+    --mo4color: Lime;
+    --mo5color: DarkRed;
+    --mo6color: Pink;
+    --mo7color: Red;
+    --mo8color: DarkGoldenrod;
+    --mo9color: Brown;
+    --mo10color: Sienna;
+    --mo11color: DodgerBlue;
+    --dayOfMonthTextColor: white;
+}
 
 body {
     background-color: black;
@@ -48,52 +63,108 @@ body {
 /* Month colors...
 */
 
+.dayNumber {
+    border-width: 2px;
+    border-style: solid;
+}
+
 .mo0 {  
-    color: DeepSkyBlue;
+    border-color: var(--mo0color);
 }
 
 .mo1 {
-    color: CornflowerBlue;
+    border-color: var(--mo1color);
 }
 
 .mo2 {
-    color: Lime;
+    border-color: var(--mo2color);
 }
 
 .mo3 {
-    color: YellowGreen;
+    border-color: var(--mo3color);
 }
 
 .mo4 {
-    color: Lime;
+    border-color: var(--mo4color);
 }
 
 .mo5 {
-    color: DarkRed;
+    border-color: var(--mo5color);
 }
 
 .mo6 {
-    color: Pink;
+    border-color: var(--mo6color);
 }
 
 .mo7 {
-    color: Red;
+    border-color: var(--mo7color);
 }
 
 .mo8 {
-    color: DarkGoldenrod;
+    border-color: var(--mo8color);
 }
 
 .mo9 {
-    color: Brown;
+    border-color: var(--mo9color);
 }
 
 .mo10 {
-    color: Sienna;
+    border-color: var(--mo10color);
 }
 
 .mo11 {
-    color: DodgerBlue;
+    border-color: var(--mo11color);
+}
+
+/* Month names in outer ring
+*/ 
+
+.mo0name {  
+    color: var(--mo0color);
+}
+
+.mo1name {
+    color: var(--mo1color);
+}
+
+.mo2name {
+    color: var(--mo2color);
+}
+
+.mo3name {
+    color: var(--mo3color);
+}
+
+.mo4name {
+    color: var(--mo4color);
+}
+
+.mo5name {
+    color: var(--mo5color);
+}
+
+.mo6name {
+    color: var(--mo6color);
+}
+
+.mo7name {
+    color: var(--mo7color);
+}
+
+.mo8name {
+    color: var(--mo8color);
+}
+
+.mo9name {
+    color: var(--mo9color);
+}
+
+.mo10name {
+    color: var(--mo10color);
+}
+
+.mo11name {
+    color: var(--mo11color);
 }
 
 /* Day-of-the-week (rings)...

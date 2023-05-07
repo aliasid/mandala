@@ -8,7 +8,6 @@ var ctrY;
 
 // Computed styles
 var clockStyle = Object();
-var month_color = Array(12);
 
 // Calendar texts  
 var day_abbrev;
@@ -157,14 +156,14 @@ function drawCalendar() {
                 // Day-of-the-month (number)
 
                 day.textContent = date.getDate();
-                day.style.border = '2px solid ' + month_color[date.getMonth()];  // TODO Use class or id    
+                day.classList.add('mo' + date.getMonth(), 'dayNumber');  // mo = color; dayNumber = border width & style
 
                 if (date.setHours(0, 0, 0, 0) == (new Date()).setHours(0, 0, 0, 0)) {
                     // Highlight today
                     day.classList.add('currentDayOfMonth');
                 }
                 else {
-                    day.classList.add('dayOfMonth', 'day' + ring);
+                    day.classList.add('dayOfMonth', 'day' + ring);  // day = background
                 }
 
                 // Advance date
@@ -213,7 +212,7 @@ function drawYearAndMonthNames() {
             sector.classList.add('txt', 'txtY');
         }
         else {
-            sector.classList.add('txt', 'mo' + moNum);
+            sector.classList.add('txt', 'mo' + moNum + 'name');
             // TODO style current month using ".txtCurrentMonth"
 
             if (outerText[i] == '!') {
@@ -248,10 +247,6 @@ function getComputedStyles() {
         document.body.appendChild(dummy);
         var style = getComputedStyle(dummy);
         return style;
-    }
-
-    for (i = 0; i < 12; i++) {
-        month_color[i] = computeStyle('mo' + i).color;
     }
 
     clockStyle.secHand = computeStyle('secHand');
