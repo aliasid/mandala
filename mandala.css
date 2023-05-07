@@ -13,9 +13,15 @@
     --mo10color: Sienna;
     --mo11color: DodgerBlue;
     --dayOfMonthTextColor: white;
+    --outerRingHeight: 800px;  
+    --innerRingsOffset: 25px;  /* NOTE Must be proportional to outerRingHeight */   
+    --clockHorzAdj: 10;
+    --clockVertAdj: 5;
+    --boolDisplaySecondHand: 1;
 }
 
 body {
+    margin: 0;
     background-color: black;
 }
 
@@ -33,20 +39,20 @@ body {
     left: 0;
 }
 
-/* Year and Month names...
+/* Outside ring: Year and Month names...
 */
 #outerRing {
     position: absolute;
     top: 10%;
     left: 50%;
-    height: 800px;
+    height: var(--outerRingHeight);
 }
 
-/* Day numbers...
+/* Ring divs...
 */
 .ring {
     position: relative;
-    top: 25px;
+    top: var(--innerRingsOffset);
 }
 
 /* Rotated text...
@@ -60,7 +66,7 @@ body {
     font: 14px Monaco, MonoSpace;
 }
 
-/* Month colors...
+/* Days in month...
 */
 
 .dayNumber {
@@ -68,7 +74,7 @@ body {
     border-style: solid;
 }
 
-.mo0 {  
+.mo0 {
     border-color: var(--mo0color);
 }
 
@@ -117,9 +123,9 @@ body {
 }
 
 /* Month names in outer ring
-*/ 
+*/
 
-.mo0name {  
+.mo0name {
     color: var(--mo0color);
 }
 
@@ -167,7 +173,7 @@ body {
     color: var(--mo11color);
 }
 
-/* Day-of-the-week (rings)...
+/* Day-of-the-week (Sun, Mon...Fri, Sat)...
 */
 
 .day0 {
@@ -201,7 +207,7 @@ body {
 /* Calendar texts...
 */
 
-.txtY {
+.year {
     color: white;
     font-weight: bold;
 }
@@ -246,9 +252,13 @@ body {
     color: red;
 }
 
-.txtH {
+.hour {
     color: white;
     font-weight: bold;
+}
+
+.currentMinute {
+    font-weight: bold;    
 }
 
 /* Clock hands...
@@ -257,17 +267,20 @@ body {
 .secHand {
     color: red;
     width: 2px;
-    height: 170px;  /* radius (lenght) */
+    height: 160px;
+    /* radius (lenght) */
 }
 
 .minHand {
     color: pink;
     width: 4px;
-    height: 158px;  /* radius (lenght) */
+    height: 158px;
+    /* radius (lenght) */
 }
 
 .hrsHand {
     color: white;
     width: 10px;
-    height: 103px;  /* radius (lenght) */
+    height: 103px;
+    /* radius (lenght) */
 }
