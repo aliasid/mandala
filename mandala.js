@@ -6,11 +6,12 @@ var ctx;
 var ctrX;
 var ctrY;
 
-// Computed styles
+// Computed styles and options
 var clockStyle = Object();
 var outerRingHeight;
 var innerRingsOffset;
-
+var boolDisplayHrsMinHands
+var boolDisplaySecondHand
 
 // Calendar texts  
 var day_abbrev;
@@ -71,37 +72,47 @@ function drawClockHands(now) {
     // Clear existing hands
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Minute hand
+    // Minute 
     var mins = now.getMinutes();
-    mins = mins > 30 ? mins - 30 : mins + 30;  // TODO Why? 
-    drawHand(clockStyle.minHand, (mins / 60) * -2 * Math.PI);
 
-    // Hours hand   
+    // Hour    
     var hrs = now.getHours();
     hrs = hrs > 12 ? hrs - 12 : hrs;
-    hrs = hrs > 6 ? hrs - 6 : hrs + 6;  // TODO Why? 
-    hrs += now.getMinutes() / 60.0;  // Advance slightly based on minute 
-    drawHand(clockStyle.hrsHand, (hrs / 12) * -2 * Math.PI);
+    var prev = hrs === 1 ? 12 : hrs - 1;    
+    document.getElementById('hours'+prev).classList.remove('currentHour');        
+    document.getElementById('hours'+hrs).classList.add('currentHour');    
 
-    // Second hand
-    
+    // Second 
     var secs = now.getSeconds();
     var prev = secs < 1 ? 59 : secs - 1;
     var prevTxt = prev % 5 === 0 ? prev.toString() : "'";
     document.getElementById('sixty'+prev).textContent = prevTxt;    
     document.getElementById('sixty'+secs).textContent = secs.toString();    
+
+    // Display hands?
     
     if (boolDisplaySecondHand !== 0) {
-        secs = secs > 30 ? secs - 30 : secs + 30;  // TODO Why? 
+        secs = secs > 30 ? secs - 30 : secs + 30;   // TODO Why        
         drawHand(clockStyle.secHand, (secs / 60) * -2 * Math.PI);
     }
-    
-    // Center circle
-    ctx.beginPath();
-    ctx.arc(ctrX, ctrY, 5, 0, 2 * Math.PI);
-    ctx.fillStyle = "lightgray";
-    ctx.fill();
 
+    if (boolDisplayHrsMinHands !== 0) {
+        hrs += now.getMinutes() / 60.0;  // Advance slightly based on minute 
+
+        // TODO Why is this logic needed?
+        mins = mins > 30 ? mins - 30 : mins + 30;   
+        hrs = hrs > 6 ? hrs - 6 : hrs + 6;   
+
+        drawHand(clockStyle.minHand, (mins / 60) * -2 * Math.PI);
+        drawHand(clockStyle.hrsHand, (hrs / 12) * -2 * Math.PI);
+
+        // Center circle
+        ctx.beginPath();
+        ctx.arc(ctrX, ctrY, 5, 0, 2 * Math.PI);
+        ctx.fillStyle = "lightgray";
+        ctx.fill();
+    }
+        
     // TODO Advance calendar at midnight
 
     // TODO Show phase of moon? Dawn? Dusk? - based on loc?
@@ -109,33 +120,59 @@ function drawClockHands(now) {
 
 function drawClockNumerals() {
 
-    function drawNumeral(ringId, className, degrees, value, height, elementId) {
+    var elem;
+    var ringId;
+
+    function setNumeral(className, degrees, value, height, elementId) {
         // Local function to draw numbers on clock face
-        var elem = document.createElement('span');
+        elem = document.createElement('span');
         elem.classList.add('txt', className);
         elem.style.transform = 'rotate(' + degrees + 'deg)';
         elem.style.height = height; 
         elem.textContent = value.toString();
         elem.setAttribute('id', ringId.toString() + elementId);
-        document.getElementById(ringId).appendChild(elem);
     }
 
     // Seconds and minutes - ring 8
+
+    ringId = 'sixty';
+
     for (i = 0; i < 60; i++) {
         if (i % 5 === 0) {
-            drawNumeral('sixty', 'txtSixtyDigit',  i * (360 / 60), i, calcHeight(8), i); 
+            setNumeral('txtSixtyDigit',  i * (360 / 60), i, calcHeight(8), i); 
         }
         else {
-            drawNumeral('sixty', 'txtSixtyTick', i * (360 / 60), "'", calcHeight(8), i); 
+            setNumeral('txtSixtyTick', i * (360 / 60), "'", calcHeight(8), i); 
         }
+
+        document.getElementById(ringId).appendChild(elem);
     }
 
     // Hours, 1-12 ring, 13-24 ring - rings 9 and 10
     for (i = 0; i < 12; i++) {
-        drawNumeral('twentyfour', 'hour', i * (360 / 12), i == 0 ? 24 : i + 12, calcHeight(9), i + 12); 
-        drawNumeral('hours', 'hour', i * (360 / 12), i == 0 ? 12 : i, calcHeight(10), i); 
-    }
+        ringId = 'twentyfour';
+        setNumeral('twentyfourhour', i * (360 / 12), i == 0 ? 24 : i + 12, calcHeight(9), i + 12); 
+        document.getElementById(ringId).appendChild(elem);
+        
+        ringId = 'hours';        
 
+        // Build container w/correct orientation, dist. from center
+        setNumeral('hourContainer', i * (360 / 12), '', calcHeight(10), 'hourContainer'+i); 
+
+        var hourNum = document.createElement('span');
+        hourNum.classList.add('txt', 'txtHour', 'mo' + (i-1) + 'name', 'hourBox');  // TODO Why is '12' wrong color?
+        hourNum.textContent = (i == 0 ? 12 : i).toString();
+        hourNum.setAttribute('id', ringId.toString() + i);
+
+        // Indicate current month number
+        if (i === (new Date).getMonth()+1) {
+            hourNum.classList.add('currentMonthNumber');
+        }
+
+        elem.appendChild(hourNum);
+
+        document.getElementById(ringId).appendChild(elem);
+    }
 }
 
 function drawCalendar() {
@@ -184,15 +221,15 @@ function drawCalendar() {
                 date = new Date(date.getFullYear(), date.getMonth(), date.getDate() + 1);
             }
 
-            // Build container w/correct orientation, dist. from center
-            var sector = document.createElement('span');
-            sector.classList.add('txt');
-            sector.style.transform = 'rotate(' + week * (360 / 53) + 'deg)';
-            sector.style.height = calcHeight(ring);   
-            sector.appendChild(day);
-
-            // Insert container into correct ring
-            document.getElementById('ring' + ring).appendChild(sector);
+             // Build container w/correct orientation, dist. from center
+             var sector = document.createElement('span');
+             sector.classList.add('txt');
+             sector.style.transform = 'rotate(' + week * (360 / 53) + 'deg)';
+             sector.style.height = calcHeight(ring);   
+             sector.appendChild(day);
+             
+             // Insert container into correct ring
+             document.getElementById('ring' + ring).appendChild(sector);            
         }
 
         if (week < 52) {
@@ -229,7 +266,8 @@ function drawYearAndMonthNames() {
             sector.classList.add('txt', 'mo' + moNum + 'name');
 
             if (moNum === now.getMonth()) {
-                sector.classList.add('txt', 'txtCurrentMonth');
+                // Show off current month name and number
+                sector.classList.add('txt', 'txtCurrentMonth');  
             }
 
             if (outerText[i] == '|') {
@@ -276,6 +314,7 @@ function getComputedStyles() {
     clockHorzAdj = parseInt(rootStyles.getPropertyValue('--clockHorzAdj'));
     clockVertAdj = parseInt(rootStyles.getPropertyValue('--clockVertAdj'));
     boolDisplaySecondHand = parseInt(rootStyles.getPropertyValue('--boolDisplaySecondHand'));
+    boolDisplayHrsMinHands = parseInt(rootStyles.getPropertyValue('--boolDisplayHrsMinHands'));
 }
 
 function getCanvasAndContext() {

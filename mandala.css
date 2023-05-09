@@ -17,7 +17,8 @@
     --innerRingsOffset: 25px;  /* NOTE Must be proportional to outerRingHeight */   
     --clockHorzAdj: 10;
     --clockVertAdj: 5;
-    --boolDisplaySecondHand: 1;
+    --boolDisplaySecondHand: 0;
+    --boolDisplayHrsMinHands: 0;
 }
 
 body {
@@ -245,16 +246,33 @@ body {
 
 .txtSixtyDigit {
     color: pink;
-    font-weight: bold;
 }
 
 .txtSixtyTick {
     color: red;
 }
 
-.hour {
-    color: white;
+.twentyfourhour {
+    color: gray;
+}
+
+.txtHour {
+    font-weight: bold;    
+}
+
+.hourBox {
+    border-width: 1px;
+    border-style: solid;
+    border-color: gray;
+}
+
+.currentHour {
+    color: red;
     font-weight: bold;
+}
+
+.currentMonthNumber {
+    text-decoration: underline;
 }
 
 .currentMinute {
